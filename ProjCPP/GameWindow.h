@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Board.h"
 #include "Game.h"
+#include "DatabaseManager.h"
 
 class GameWindow : public QMainWindow
 {
@@ -31,8 +32,11 @@ private:
         "color: #333;"
         "}";
 
+    DatabaseManager* db;
+    void saveGameToDatabase(int winnerFlag);
+
 public:
-    GameWindow(QString p1Name, QString p2Name, int size, bool vsComp, QString mode);
+    GameWindow(QString p1Name, QString p2Name, int size, bool vsComp, QString mode, DatabaseManager* dbManager);
     ~GameWindow();
 };
 

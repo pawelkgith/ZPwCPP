@@ -57,6 +57,7 @@ Player* Game::getCurrentPlayer() {
 
 bool Game::makeMove(int row, int col) {
 	if (board->isCellEmpty(row, col)) {
+        moveHistory.push_back({ currentPlayer, row, col });
 		currentPlayer->makeMove(*board, row, col);
 		return true;
 	}
@@ -200,6 +201,7 @@ Board& Game::getBoard() {
 
 void Game::resetGame() {
 	board->clear();
+    moveHistory.clear();
 	
 	currentPlayer = isP1Next ? player1 : player2;
 

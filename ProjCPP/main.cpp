@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     DatabaseManager dbManager;
     if (dbManager.connectDatabase()) {
-        qDebug() << "Baza gotowa";
+        dbManager.createTables();
     }
 
     StartMenu menu;
@@ -29,7 +29,8 @@ int main(int argc, char *argv[])
         menu.player2Name,
         menu.boardSize,
         menu.vsComputer,
-        menu.gameMode
+        menu.gameMode,
+        &dbManager
     );
 
     window.show();

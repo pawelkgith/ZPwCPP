@@ -1,8 +1,8 @@
 #pragma execution_character_set("utf-8")
 #include "GameWindow.h"
 
-GameWindow::GameWindow(QString p1Name, QString p2Name, int size, bool vsComp, QString mode)
-	: boardSize(size), vsComputer(vsComp), gameMode(mode), gameFinished(false)
+GameWindow::GameWindow(QString p1Name, QString p2Name, int size, bool vsComp, QString mode, DatabaseManager* dbManager)
+	: boardSize(size), vsComputer(vsComp), gameMode(mode), gameFinished(false), db(dbManager)
 {
     // tworzenie obiektow
     player1 = new Player(p1Name, 'X');
@@ -97,6 +97,7 @@ GameWindow::GameWindow(QString p1Name, QString p2Name, int size, bool vsComp, QS
                     // sprawdzenie wygranej
                     int winner = game->checkWinner();
                     if (winner != 0) {
+                        saveGameToDatabase(winner);
                         QString winnerName = (winner == 1) ?
                             "" + player1->getName() + "(" + QString(player1->getSymbol()) + ")" :
                             "" + player2->getName() + "(" + QString(player2->getSymbol()) + ")";
@@ -104,6 +105,7 @@ GameWindow::GameWindow(QString p1Name, QString p2Name, int size, bool vsComp, QS
                         gameFinished = true;
                     }
                     else if (game->isDraw()) {
+                        saveGameToDatabase(0);
                         QMessageBox::information(nullptr, "Koniec gry!", "Remis!", QMessageBox::Ok);
                         gameFinished = true;
                     }
@@ -130,12 +132,14 @@ GameWindow::GameWindow(QString p1Name, QString p2Name, int size, bool vsComp, QS
                             // sprawdzenie wygranej po ruchu komputera
                             int winner = game->checkWinner();
                             if (winner != 0) {
+                                saveGameToDatabase(winner);
                                 QString winnerName = (winner == 1) ? player1->getName() : player2->getName();
                                 QMessageBox::information(nullptr, "Koniec gry!", winnerName + " wygrywa!", QMessageBox::Ok);
                                 gameFinished = true;
                                 statusLabel->setText("Koniec gry! " + winnerName + " wygrał!");
                             }
                             else if (game->isDraw()) {
+                                saveGameToDatabase(1);
                                 QMessageBox::information(nullptr, "Koniec gry!", "Remis!", QMessageBox::Ok);
                                 gameFinished = true;
                                 statusLabel->setText("Koniec gry! Remis!");
@@ -183,6 +187,32 @@ GameWindow::GameWindow(QString p1Name, QString p2Name, int size, bool vsComp, QS
 
     resize(600, 650);
     setWindowTitle("Kółko i krzyżyk " + gameMode);
+}
+
+void GameWindow::saveGameToDatabase(int winnerFlag) {
+    int p1_id = db->getPlayer(player1->getName());
+    int p2_id = db->getPlayer(player2->getName());
+
+    int winner_id = -1; // remis
+    if (winnerFlag == 1) winner_id = p1_id;
+    else if (winnerFlag == 2) winner_id = p2_id;
+
+    std::vector<MoveRecord> history = game->getMoveHistory();
+
+    int match_id = db->saveMatch(p1_id, p2_id, winner_id, history.size());
+
+    if (match_id == -1) {
+        qDebug() << "Nie udalo sie utworzyc meczu w bazie";
+        return;
+    }
+
+    for (size_t i = 0; i < history.size(); i++) {
+        int move_player_id = (history[i].player == player1) ? p1_id : p2_id;
+
+        db->saveMove(match_id, move_player_id, i + 1, history[i].row, history[i].col);
+    }
+
+    qDebug() << "Gra zapisana";
 }
 
 GameWindow::~GameWindow() {

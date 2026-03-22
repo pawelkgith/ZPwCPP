@@ -1,6 +1,13 @@
 #pragma once
 #include "Board.h"
 #include "Player.h"
+#include <vector>
+
+struct MoveRecord {
+	Player* player;
+	int row;
+	int col;
+};
 
 class Game {
 private:
@@ -10,6 +17,7 @@ private:
 	Player* currentPlayer;
 	bool vsComputer;
 	bool isP1Next = true;
+	std::vector<MoveRecord> moveHistory;
 
 public:
 	Game(Player* p1, Player* p2, int boardSize, bool vsComp = false);
@@ -22,5 +30,6 @@ public:
 	void computerMove();
 	Board& getBoard();
 	void resetGame();
+	std::vector<MoveRecord> getMoveHistory() { return moveHistory; }
 	~Game();
 };
