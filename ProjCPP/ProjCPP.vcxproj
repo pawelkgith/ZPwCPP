@@ -95,6 +95,7 @@
     <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="StartMenu.cpp" />
+    <ClCompile Include="StatsWindow.cpp" />
     <QtRcc Include="ProjCPP.qrc" />
     <QtUic Include="ProjCPP.ui" />
     <QtMoc Include="ProjCPP.h" />
@@ -111,6 +112,7 @@
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="StartMenu.h" />
+    <ClInclude Include="StatsWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -2,11 +2,12 @@
 #include "StartMenu.h"
 #include <QtWidgets/QApplication>
 #include <QtWidgets>
+#include "StatsWindow.h"
 #include "Player.h"
 #include "Board.h"
 #include "Game.h"
 
-StartMenu::StartMenu() {
+StartMenu::StartMenu(DatabaseManager* dbManager) : db(dbManager) {
     setWindowTitle("Kółko i Krzyżyk - Menu");
     setFixedSize(400, 450);
 
@@ -25,6 +26,10 @@ StartMenu::StartMenu() {
     titleFont.setPointSize(20);
     titleFont.setBold(true);
     titleLabel->setFont(titleFont);
+
+    //przycisk statystyk
+    statsButton = new QPushButton("Statystyki");
+    statsButton->setFixedHeight(35);
 
     // przyciski trybow gry
     QPushButton* pvpButton = new QPushButton("Graj ze znajomym");
@@ -80,6 +85,9 @@ StartMenu::StartMenu() {
     sizeLayout->addWidget(boardSizeWidget, 0, Qt::AlignCenter);
 
     mainLayout->addWidget(titleLabel);
+    mainLayout->addSpacing(10);
+    mainLayout->addWidget(statsButton);
+    mainLayout->addSpacing(10);
     mainLayout->addLayout(buttonsLayout);
     mainLayout->addWidget(pvpWidget);
     mainLayout->addWidget(pvcWidget);
@@ -88,6 +96,11 @@ StartMenu::StartMenu() {
     mainLayout->addStretch();
 
     setLayout(mainLayout);
+
+    connect(statsButton, &QPushButton::clicked, [this]() {
+        StatsWindow statsWin(this->db, this);
+        statsWin.exec();
+        });
 
     connect(pvpButton, &QPushButton::clicked, [this]() {
         gameMode = "PvP";

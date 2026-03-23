@@ -142,4 +142,5 @@ void DatabaseManager::clearDatabase() {
 	query.exec("DELETE FROM Ruchy");
 	query.exec("DELETE FROM Mecze");
 	query.exec("DELETE FROM Gracze");
+	query.exec("DELETE FROM sqlite_sequence");
 }

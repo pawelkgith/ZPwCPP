@@ -17,9 +17,10 @@ int main(int argc, char *argv[])
     DatabaseManager dbManager;
     if (dbManager.connectDatabase()) {
         dbManager.createTables();
+        //dbManager.clearDatabase();
     }
 
-    StartMenu menu;
+    StartMenu menu(&dbManager);
     if (menu.exec() != QDialog::Accepted) {
         return 0;
     }
